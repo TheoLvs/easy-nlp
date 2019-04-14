@@ -71,12 +71,17 @@ class SingleColumnCorpus(Corpus):
         # Create a copy of text columns for further reset
         self.data.insert(0,"raw_text",self.text.copy())
 
+        # Tokenize
+        self.tokenize()
+
 
     def __getitem__(self,key):
         if isinstance(key,int):
             return self.text.iloc[key]
+        elif isinstance(key,str):
+            return self.data.loc[:,key]
         else:
-            raise KeyError(f"Key {key} must be an integer")
+            raise KeyError(f"Integer keys should return rows, Str keys should return columns")
 
 
     def reset_text(self):
@@ -102,6 +107,19 @@ class SingleColumnCorpus(Corpus):
         """Setter for text column
         """
         self.data.loc[:,self.col] = series
+
+    @property
+    def tokens(self):
+        """Getter for tokens column
+        """
+        return self.data["tokens"]
+
+    @tokens.setter
+    def tokens(self,series):
+        """Setter for text column
+        """
+        self.data.loc[:,"tokens"] = series
+        self.join_from_tokens()
 
     
     def get_flatten_text(self):
@@ -147,28 +165,10 @@ class SingleColumnCorpus(Corpus):
         self.map(remove_punct)
 
 
-    def remove_stop_words(self):
-        """Remove stop words
-        """
-        raise NotImplementedError("Stop words removal are not yet implemented")
-        self.map(remove_stop_words)
-
-
     def remove_multiple_spaces(self):
         """Remove multiple whitespaces inbetween words in the text
         """
         self.map(remove_multiple_spaces)
-
-    def remove_short_tokens(self,size = 1):
-        pass
-
-    def remove_long_tokens(self,size = 30):
-        pass
-
-    def remove_vocab(self,vocab):
-        """Remove words from text column from a given vocabulary set
-        """
-        pass
 
 
     def clean(self):
@@ -184,6 +184,25 @@ class SingleColumnCorpus(Corpus):
         self.remove_unicode()
         self.remove_punct()
         self.remove_multiple_spaces()
+
+
+    def clean_tokens(self,stopwords = None,vocab = None,min_len = 1,max_len = 30):
+        """Clean tokens column
+        """
+
+        vocab = vocab if vocab is not None else []
+        if stopwords is not None:
+            vocab_stopwords = get_stop_words(stopwords)
+            vocab.extend(vocab_stopwords)
+
+        self.tokens = self.tokens.map(lambda x : clean_tokens(x,
+            stopwords = None,
+            vocab = vocab,
+            min_len = min_len,
+            max_len = max_len,
+            ))
+
+
 
 
     def query(self):
@@ -208,13 +227,19 @@ class SingleColumnCorpus(Corpus):
         """Tokenize a corpus on a given separator
         Simplest example being splitting on whitespaces 
         """
-        self.data["tokens"] = self.text.str.split(sep)
+        self.tokens = self.text.str.split(sep)
 
 
-    def tokenize(self):
+    def tokenize(self,lang = "english"):
         """Advanced tokenize function
         """
-        pass
+        self.tokens = self.text.map(lambda x : tokenize(x,lang))
+
+
+    def join_from_tokens(self):
+        """Rejoin the tokens columns into the text columns
+        """
+        self.text = self.tokens.map(lambda x : " ".join(x))
 
 
     def count_words_sep(self,sep = " "):
@@ -227,11 +252,29 @@ class SingleColumnCorpus(Corpus):
             .value_counts()
             )
 
+    def count_words(self):
+        return (self.tokens
+            .apply(pd.Series)
+            .melt()
+            ["value"]
+            .value_counts()
+            )
 
-    def detect_ngrams(self):
+
+
+
+    def detect_ngrams(self,n = 100,freq_filter = 5):
         """Detect ngrams in text and collocate them with underscore
         """
-        pass
+        
+        # Get all list of tokens
+        documents = self.tokens.tolist()
+
+        # Get bigrams
+        self.bigrams = find_bigrams(documents,freq_filter = freq_filter,n = n)
+
+        # Replace bigrams
+        self.text = self.text.map(lambda x : replace_bigrams(x,self.bigrams))
 
 
 
