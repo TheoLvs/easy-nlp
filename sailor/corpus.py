@@ -72,6 +72,13 @@ class SingleColumnCorpus(Corpus):
         self.data.insert(0,"raw_text",self.text.copy())
 
 
+    def __getitem__(self,key):
+        if isinstance(key,int):
+            return self.text.iloc[key]
+        else:
+            raise KeyError(f"Key {key} must be an integer")
+
+
     def reset_text(self):
         """Reset text column from original text
         """
