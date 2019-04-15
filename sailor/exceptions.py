@@ -11,3 +11,7 @@ class NotImplementedError(Exception):
 
 class PreprocessingError(Exception):
     pass
+
+
+class UniverseError(Exception):
+    pass

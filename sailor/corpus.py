@@ -260,13 +260,16 @@ class SingleColumnCorpus(Corpus):
             )
 
     def count_words(self):
-        return (self.tokens
+        return self.count_tags("tokens")
+
+
+    def count_tags(self,column):
+        return (self.data[column]
             .apply(pd.Series)
             .melt()
             ["value"]
             .value_counts()
             )
-
 
 
 
@@ -290,3 +293,10 @@ class SingleColumnCorpus(Corpus):
         """TODO temporary function
         """
         self.tfidf_vectorizer,self.tfidf = fit_tfidf(self.documents,**kwargs)
+
+
+
+    def extract_from_universe(self,universe,unique = False):
+        return self.text.map(lambda x : universe.find_concepts(x,unique))
+
+
