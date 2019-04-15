@@ -6,6 +6,7 @@ from .exceptions import *
 # Custom functions
 from .functions.language import detect_language
 from .functions.preprocessing import *
+from .models.vectorizer import fit_tfidf
 
 
 class Corpus(object):
@@ -107,6 +108,12 @@ class SingleColumnCorpus(Corpus):
         """Setter for text column
         """
         self.data.loc[:,self.col] = series
+
+
+    @property
+    def documents(self):
+        return self.text.tolist()
+
 
     @property
     def tokens(self):
@@ -279,10 +286,7 @@ class SingleColumnCorpus(Corpus):
 
 
 
-
-
-
-
-
-    
-
+    def fit_tfidf(self,**kwargs):
+        """TODO temporary function
+        """
+        self.tfidf_vectorizer,self.tfidf = fit_tfidf(self.documents,**kwargs)

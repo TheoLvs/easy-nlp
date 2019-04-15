@@ -1,7 +1,11 @@
 
+import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
 def plot_word_cloud(text,title = "",width = 600,height = 300,max_words = 50,figsize = (18,10),max_font_size = 50,mask_file = None,**kwargs):
+
+    if isinstance(text,list):
+        text = " ".join(text)
 
     with plt.style.context(('ggplot')):
         fig = plt.figure(figsize=figsize)
@@ -17,5 +21,3 @@ def plot_word_cloud(text,title = "",width = 600,height = 300,max_words = 50,figs
         plt.title(title, fontsize=20)
         plt.axis("off")
         plt.show()
-        
-    return fig
