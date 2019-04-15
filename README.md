@@ -4,6 +4,25 @@
 A Python library wrapping many NLP tasks on a corpus
 
 # Sailor NLP in a nutshell
+> There are plenty of NLP libraries in Python, yet most of them (spaCy, NLTK, Textblob) are dedicated to single text analysis. 
+> When you have to extract information from a corpus of texts or documents you always need to reinvent the wheel.
+> That's when the **sailor** comes in ! To guide and help you explore unstructured text corpuses. 
+> The goal is not create state-of-the-art NER or sentiment analysis model, but to wrap plenty of functionalities from topic extraction to supervised learning.
+
+## Use cases
+Anything that has multiple texts:
+- Set of reviews or comments
+- Set of articles
+- Set of tweets
+
+## What can you except ?
+- Unsupervised learning (Clustering)
+- Unsupervised mining (Topic extraction)
+- Supervised learning (Classification)
+- Supervised mining (Interpretability, Universe extraction)
+- Corpus modelling (Doc2Vec)
+- Visualizations
+
 
 # Requirements
 ```
