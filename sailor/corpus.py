@@ -9,6 +9,8 @@ from .functions.preprocessing import *
 from .models.vectorizer import fit_tfidf
 
 
+
+
 class Corpus(object):
     def __init__(self):
         pass
@@ -260,16 +262,40 @@ class SingleColumnCorpus(Corpus):
             )
 
     def count_words(self):
+        """Count the number of tokens
+        """
         return self.count_tags("tokens")
 
 
-    def count_tags(self,column):
-        return (self.data[column]
-            .apply(pd.Series)
-            .melt()
-            ["value"]
-            .value_counts()
-            )
+    def count_tags(self,column,by = None,normalize = False):
+        """Count the occurences of a column containing tags
+        """
+        if by is None:
+            return (self.data[column]
+                .apply(pd.Series)
+                .melt()
+                ["value"]
+                .value_counts()
+                )
+        else:
+            by = by if isinstance(by,list) else [by] 
+            return (pd.concat([
+                    self.data[by],
+                    self.data[column].apply(pd.Series)
+                ],axis = 1)
+                .melt(id_vars = by)
+                .dropna(subset = ["value"])
+                .rename(columns = {"value":column})
+                .drop(columns = ["variable"])
+                .reset_index(drop = True)
+                .assign(count = lambda df: 1)
+                .groupby(by+[column])
+                .sum()
+                .unstack(column)
+                .fillna(0.0)
+                .apply(lambda x: x/x.sum() if normalize else x,axis = 1)
+                ["count"]
+                )
 
 
 
