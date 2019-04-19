@@ -14,14 +14,39 @@ from nltk.collocations import BigramCollocationFinder
 
 
 def remove_punct(x):
+    """Remove punctation from a string
+
+    Args:
+        x (str): input string to transform
+
+    Returns
+        str - the transformed string
+    """
     return x.translate(str.maketrans('', '', string.punctuation))
 
 
 def remove_multiple_spaces(x):
+    """Remove multiple spaces from a string
+
+    Args:
+        x (str): input string to transform
+
+    Returns
+        str - the transformed string
+    """
     return " ".join(x.split())
 
 
 def remove_unicode(x):
+    """Remove unicode characters from a string
+    For example the accents in French
+
+    Args:
+        x (str): input string to transform
+
+    Returns
+        str - the transformed string
+    """
     return unidecode.unidecode(x)
 
 
