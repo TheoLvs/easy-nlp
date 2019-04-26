@@ -22,12 +22,13 @@ Anything that has multiple texts:
 - Supervised mining (Interpretability, Universe extraction)
 - Corpus modelling (Doc2Vec)
 - Visualizations
+- IO (from OCR)
 
 ## How is it different than other libraries ?
 Sailor's goal is simplicity of use. <br> 
 It was built for non NLP practicioners that don't know how to use SpaCy or complex language models, but just want to analyze very fast short corpuses of texts. <br>
 That's why the core of Sailor is just extending Pandas DataFrames to text analysis for fast processing and ease of use. 
-Over time it will include other advanced functionalities like Deep Learning through SpaCy or flair.
+Over time it will include other advanced functionalities like Deep Learning through SpaCy, flair, or Fast.ai.
 
 
 
@@ -36,3 +37,5 @@ Over time it will include other advanced functionalities like Deep Learning thro
 nltk.download('punkt')
 nltk.download('stopwords')
 ```
+
+

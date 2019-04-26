@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
+from tqdm import tqdm_notebook
 
 # IO
 import io
@@ -19,6 +20,8 @@ import pytesseract
 pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
 
 
+# Custom library
+from ..corpus import SingleColumnCorpus
 
 
 
@@ -44,3 +47,27 @@ def image_to_string(img,lang = None,**kwargs):
     return pytesseract.image_to_string(img,lang=lang,**kwargs)
 
 
+
+def create_corpus_from_list_of_pdfs(paths,resolution = None,lang = None,**kwargs):
+    # From folder
+    if isinstance(paths,str):
+        paths = [os.path.join(paths,x) for x in os.listdir(paths)]
+
+    texts = []
+
+    i = 0
+
+    for path in tqdm_notebook(paths):
+        try:
+            img = pdf_to_image(path,resolution = resolution,**kwargs)
+            text = image_to_string(img,lang = lang)
+            texts.append({"path":path,"text":text})
+        except: 
+            print(f"Skipped file {path}")        
+        i += 1
+        if i % 10 == 0:
+            pd.DataFrame(texts).to_pickle("test.pkl")
+
+    texts = pd.DataFrame(texts)
+
+    return texts
